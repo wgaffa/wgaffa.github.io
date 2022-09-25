@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://wgaffa.github.io/sitemap.xml
