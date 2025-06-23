@@ -37,7 +37,7 @@ createValidCharacterName = undefined
 ```
 While here we lift the text up to a `Maybe` type and possibly change the input like removing leading and trailing spaces for example. Not complicated at all.
 
-And this is all that might matter to you at the point and that's fine, but I wanted to learn more and create a solution that was safer. So what is the problem with this solution?
+This may be sufficient for many applications, but I wanted to push further and explore how to make the solution even safer at the type level.
 
 The first thing is that nothing is preventing me from changing the text after I have validated it and use a bad character name to function like
 ```haskell
@@ -46,8 +46,8 @@ someFaultyTower = undefined
 
 cantStopMe :: Text -> IO ()
 cantStopMe name = if isValidCharacterName name
-	then someFaultyTowers ""
-	else someFaultyTowers name
+	then someFaultyTower ""
+	else someFaultyTower name
 ```
 In the true branch I can still call the function with whatever I want or change the name to something that hasn't been validated, likewise I can just call the supposedly good function with the invalid name. The function might want to store the name in a database or display it, but it does expect a valid name.
 
