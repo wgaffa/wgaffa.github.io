@@ -1,0 +1,409 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!-- Title -->
+  <title>
+    Term to Type - Wgaffa
+  </title>
+
+  <!-- Meta -->
+  <meta name="theme-color" />
+
+  
+  <!-- Author -->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  <meta name="description" content="How I went from term level to type level programming" />
+  <meta name="author" content="Wgaffa" />
+  <!-- The Open Graph protocol -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Term to Type" />
+  <meta property="og:site_name" content="Wgaffa" />
+  <meta property="og:description" content="How I went from term level to type level programming" />
+  <meta property="og:url" content="https:&#x2F;&#x2F;wgaffa.github.io&#x2F;term-to-type&#x2F;" />
+  
+  <!---->
+  
+  <!---->
+  
+
+  <!-- CSS & JS -->
+  <link rel="preload stylesheet" as="style" href="https://wgaffa.github.io/main.css" />
+  <style>
+    :root {
+      --bg: #f4f4f5;
+      --bg-dark: #18181b;
+      --header: #e4e4e7;
+      --header-dark: #27272a;
+    }
+  </style>
+
+  
+
+  <!-- Dark Icon -->
+  <link rel="preload" as="image" href="https://wgaffa.github.io/icons/theme.svg" />
+
+  <!-- Math -->
+  
+  <!---->
+
+  <!-- Mermaid -->
+  
+  <!---->
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://wgaffa.github.io/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://wgaffa.github.io/apple-touch-icon.png" />
+
+  <!-- Feeds -->
+  
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https:&#x2F;&#x2F;wgaffa.github.io&#x2F;term-to-type&#x2F;" />
+
+  <!-- Head inject -->
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header
+  class="header fixed top-0 z-40 mx-auto min-h-[3.5rem] w-full"
+>
+  <div class="mx-auto w-full max-w-4xl p-3 lg:flex lg:justify-between">
+    <div class="flex justify-between">
+      <div class="flex items-center">
+        <a class="text-2xl font-semibold" href="https://wgaffa.github.io">Wgaffa</a>
+        <div
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:[background-position:right] dark:invert"
+          role="button"
+          aria-label="Dark"
+        ></div>
+      </div>
+      
+    </div>
+    <script>
+      // base
+      const htmlClass = document.documentElement.classList;
+      setTimeout(() => {
+        htmlClass.remove("not-ready");
+      }, 10);
+
+      // mobile menu
+      const btnMenu = document.querySelector(".btn-menu");
+      btnMenu?.addEventListener("click", () => {
+        htmlClass.toggle("open");
+      });
+
+      // dark theme
+      const setDark = (isDark) => {
+        if (isDark) {
+          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "dark" }));
+          htmlClass.add("dark");
+        } else {
+          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "light" }));
+          htmlClass.remove("dark");
+        }
+        localStorage.setItem("dark", isDark);
+      };
+
+      // init
+      const darkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+      if (htmlClass.contains("dark")) {
+        setDark(true);
+      } else {
+        const darkVal = localStorage.getItem("dark");
+        setDark(darkVal ? darkVal === "true" : darkScheme.matches);
+      }
+
+      // listen system
+      darkScheme.addEventListener("change", (event) => {
+        setDark(event.matches);
+      });
+
+      // manual switch
+      const btnDark = document.querySelector(".btn-dark");
+      btnDark.addEventListener("click", () => {
+        setDark(localStorage.getItem("dark") !== "true");
+      });
+    </script>
+    
+  </div>
+</header>
+
+
+    <!-- Body Start inject -->
+    
+
+    <main
+      class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg relative mx-auto min-h-[calc(100vh-9rem)] max-w-3xl px-4 pt-24 pb-16 break-words lg:pt-32"
+    >
+      
+<article>
+  <!-- Page Start inject -->
+  
+
+  <header class="mb-16">
+    <h1 class="my-0! pb-2.5">Term to Type</h1>
+    <div class="text-sm antialiased opacity-60">
+  
+  <time>2025-06-09</time>
+  <span class="mx-1">&middot;</span>
+  <span>7min</span>
+  <!---->
+  <!---->
+  <!---->
+  <!---->
+  
+  <!-- Page Info inject -->
+  
+</div>
+
+  </header>
+
+  
+
+  <!-- TOC -->
+  <!---->
+<div class="block-bg mb-12 flex rounded-lg p-2 text-lg">
+  <details>
+    <summary class="cursor-pointer py-1 pl-4">
+      <span>Table of Contents</span>
+    </summary>
+    <div class="px-2">
+      <ul>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://wgaffa.github.io/term-to-type/#abstract"
+            >Abstract</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://wgaffa.github.io/term-to-type/#the-problem"
+            >The Problem</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://wgaffa.github.io/term-to-type/#problem-extension"
+            >Problem Extension</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://wgaffa.github.io/term-to-type/#singletons"
+            >Singletons</a
+          >
+          
+        </li>
+        
+      </ul>
+    </div>
+  </details>
+</div>
+
+<!---->
+
+  <!-- Content -->
+  <section><h1 id="abstract">Abstract</h1>
+<p>When searching <code>type level programming</code> on your favorite search engine you will most likely find resources that shows the same code like <em>peano numbers</em> and <em>length indexed vectors</em> but at times I wished they could show some other examples or use cases. And while some do like Rebecca Skinners article <a href="https://rebeccaskinner.net/posts/2021-08-25-introduction-to-type-level-programming.html">An Introduction to Type Level Programming</a> I seem to get lost when I try to implement something or fail to understand why I can't do certain things.</p>
+<p>Although this post starts out very easy and simple there will be some advanced futures of Haskell mentioned here so a good to advanced knowledge is expected as I won't go into what extensions are being used but are inferred.</p>
+<p>This is mostly my personal brain dump but I share this if anyone else finds this helpful.</p>
+<p>Most functions and other definitions will not have an implementation unless it's important to understand a specific concept.</p>
+<h1 id="the-problem">The Problem</h1>
+<p>Given a character name we want to make sure it follows a specific rule where the rules are as follow:</p>
+<ul>
+<li>Does not exceed the maximum character limit (maximum 19 characters).</li>
+<li>Must use a minimum of 3 characters (a space counts as one).</li>
+<li>Must use two or more words (implies at least one space).</li>
+<li>Must use only Latin letters (digits are not allowed).</li>
+</ul>
+<p>And this is trivially done with one or more functions depending on what you prefer or use case.</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">isValidCharacterName </span><span style="color:#b48ead;">:: Text -&gt; Bool
+</span><span>isValidCharacterName = undefined
+</span></code></pre>
+<p>Here we return True if it's a valid and False otherwise, simple and to the point.</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">createValidCharacterName </span><span style="color:#b48ead;">:: Text -&gt; Maybe Text
+</span><span>createValidCharacterName = undefined
+</span></code></pre>
+<p>While here we lift the text up to a <code>Maybe</code> type and possibly change the input like removing leading and trailing spaces for example. Not complicated at all.</p>
+<p>This may be sufficient for many applications, but I wanted to push further and explore how to make the solution even safer at the type level.</p>
+<p>The first thing is that nothing is preventing me from changing the text after I have validated it and use a bad character name to function like</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">someFaultyTower </span><span style="color:#b48ead;">:: Text -&gt; IO </span><span>()
+</span><span>someFaultyTower = undefined
+</span><span>
+</span><span style="color:#8fa1b3;">cantStopMe </span><span style="color:#b48ead;">:: Text -&gt; IO </span><span>()
+</span><span>cantStopMe name = </span><span style="color:#b48ead;">if</span><span> isValidCharacterName name
+</span><span>	</span><span style="color:#b48ead;">then</span><span> someFaultyTower &quot;&quot;
+</span><span>	</span><span style="color:#b48ead;">else</span><span> someFaultyTower name
+</span></code></pre>
+<p>In the true branch I can still call the function with whatever I want or change the name to something that hasn't been validated, likewise I can just call the supposedly good function with the invalid name. The function might want to store the name in a database or display it, but it does expect a valid name.</p>
+<p>Secondly likewise with the other function returning a <code>Maybe</code> type we can just use the functor class to change the value to something invalid for example.</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">toppledTower </span><span style="color:#b48ead;">:: Text -&gt; Maybe Text
+</span><span>toppledTower name = const &quot;&quot; &lt;$&gt; createValidCharacterName name
+</span></code></pre>
+<p>If we are given a valid name we can still just map over it to whatever text we want, albeit given an invalid name this will still return a <code>Nothing</code> value.</p>
+<p>So while we do validate a <code>Text</code> in itself doesn't hold any information whether this is a valid character name. So what can we do about it?</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">newtype </span><span style="color:#d08770;">CharacterName </span><span>= </span><span style="color:#d08770;">CharacterName</span><span> {unCharacterName :: </span><span style="color:#d08770;">Text</span><span>} </span><span style="color:#b48ead;">deriving</span><span> (</span><span style="color:#a3be8c;">Show</span><span>)
+</span><span>
+</span><span style="color:#8fa1b3;">createCharacterName </span><span style="color:#b48ead;">:: Text -&gt; Maybe CharacterName
+</span><span>createCharacterName = undefined
+</span></code></pre>
+<p>Here we create a newtype that represents a text value. And to make sure it can't be instantiated with a bad value make sure to only export the type and <code>createCharacterName</code>. <code>createCharacterName</code> is then responsible to check for the invariants and return it in a <code>Maybe</code> type or <code>Nothing</code> otherwise. Now we can use these for different purposes like have a list of character names <code>[CharacterName]</code> or a map between Int and character name <code>Map Int CharacterName</code>. As long as we can only get a valid <code>CharacterName</code> from <code>createCharacterName</code> we know that it is a valid character name.</p>
+<h1 id="problem-extension">Problem Extension</h1>
+<p>What if we want some different naming rules depending on a value. Say we only allow these rules:</p>
+<ul>
+<li>American Europe
+<ul>
+<li>Does not exceed the maximum character limit (maximum 19 characters).</li>
+<li>Must use a minimum of 3 characters (a space counts as one).</li>
+<li>Must use two or more words (implies at least one space).</li>
+<li>Must use only Latin letters (digits are not allowed).</li>
+</ul>
+</li>
+<li>Japanese
+<ul>
+<li>Does not exceed the maximum character limit (maximum 16 characters).</li>
+<li>Must use a minimum of 4 characters (each Japanese character counts as 2 characters).</li>
+<li>Must use at least 1 Japanese character (Latin letters are optional).</li>
+<li>Must not contain any spaces.</li>
+<li>Must use only Japanese characters and Latin letters (digits are not allowed).</li>
+</ul>
+</li>
+<li>Chinese
+<ul>
+<li>Does not exceed the maximum character limit (maximum 16 characters).</li>
+<li>Must use a minimum of 3 characters (each Chinese character counts as 2 characters).</li>
+<li>Must use at least 1 Chinese character (Latin letters are optional).</li>
+<li>Must not contain any spaces.</li>
+<li>Must use only Chinese characters and Latin letters (digits are not allowed).</li>
+</ul>
+</li>
+</ul>
+<p>Here we can expand on some of our functions quite easily.</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">data </span><span style="color:#d08770;">NameRule </span><span>= </span><span style="color:#d08770;">AmericanEurope </span><span>| </span><span style="color:#d08770;">Japanese </span><span>| </span><span style="color:#d08770;">Chinese
+</span><span>
+</span><span style="color:#8fa1b3;">createCharacterName </span><span style="color:#b48ead;">:: NameRule -&gt; Text -&gt; Maybe CharacterName
+</span><span>createCharacterName = undefined
+</span></code></pre>
+<p>So we first define a sum type that holds our types of naming rules conventions and the function would then choose and validate the name based on the <code>NameRule</code> given.</p>
+<p>So we have now reached another tier of safety and we can still have the same types like before like lists of character names or an associated map. But we do loose for what type of rule was used for this name. We can't define a function like <code>CharacterName -&gt; NameRule</code> that would be dependent on the first parameter. To solve this we can create a simple record.</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">data </span><span style="color:#d08770;">CharacterName </span><span>= </span><span style="color:#d08770;">CharacterName</span><span> {_characterNameRule :: </span><span style="color:#d08770;">NameRule</span><span>, _characterName :: </span><span style="color:#d08770;">Text</span><span>}
+</span></code></pre>
+<p>And we still get the same benefit as before but with some extra information. But I was experimenting with type level so lets push the name ruling to the type level instead.</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">newtype </span><span style="color:#d08770;">CharacterName</span><span> (ruling :: </span><span style="color:#d08770;">NameRule</span><span>) = </span><span style="color:#d08770;">CharacterName</span><span> {unCharacterName :: </span><span style="color:#d08770;">Text</span><span>}
+</span></code></pre>
+<p>But this type does not conform to the <code>createCharacterName</code> we had before as it returns a simple <code>CharacterName</code>, so what can we do? We can try to instantiate the type based on the NameRule.</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">createCharacterName </span><span style="color:#b48ead;">:: NameRule -&gt; Text -&gt; Maybe</span><span> (</span><span style="color:#b48ead;">CharacterName </span><span style="color:#bf616a;">ruling</span><span>)
+</span><span>createCharacterName nameRule name =
+</span><span>	</span><span style="color:#b48ead;">case</span><span> nameRule </span><span style="color:#b48ead;">of
+</span><span>	    </span><span style="color:#d08770;">AmericanEurope </span><span>-&gt; </span><span style="color:#b48ead;">if</span><span> validAmericanEurope name </span><span style="color:#b48ead;">then </span><span style="color:#d08770;">Just</span><span> (</span><span style="color:#d08770;">CharacterName</span><span> @</span><span style="color:#d08770;">AmericanEurope</span><span> name) </span><span style="color:#b48ead;">else </span><span style="color:#d08770;">Nothing
+</span><span>	    </span><span style="color:#d08770;">Japanese </span><span>-&gt; </span><span style="color:#b48ead;">if</span><span> validJapanese name </span><span style="color:#b48ead;">then </span><span style="color:#d08770;">Just</span><span> (</span><span style="color:#d08770;">CharacterName</span><span> @</span><span style="color:#d08770;">Japanese</span><span> name) </span><span style="color:#b48ead;">else </span><span style="color:#d08770;">Nothing
+</span><span>	    </span><span style="color:#d08770;">Chinese </span><span>-&gt; </span><span style="color:#b48ead;">if</span><span> validChinese name </span><span style="color:#b48ead;">then </span><span style="color:#d08770;">Just</span><span> (</span><span style="color:#d08770;">CharacterName</span><span> @</span><span style="color:#d08770;">Chinese</span><span> name) </span><span style="color:#b48ead;">else </span><span style="color:#d08770;">Nothing
+</span></code></pre>
+<p>But this fails to compile because we are saying that we return a <code>CharacterName</code> for all <em>ruling</em>. This is called universal quantification. The caller of the function decides what <em>ruling</em> is when called. For example a function could look like this.</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">manuelQuePasa </span><span style="color:#b48ead;">:: Text -&gt; Maybe</span><span> (</span><span style="color:#b48ead;">CharacterName AmericanEurope</span><span>)
+</span><span>manuelQuePasa = createCharacterName </span><span style="color:#d08770;">AmericanEurope
+</span></code></pre>
+<p>This would seem to be fine but to a compiler there are options to call this function. For example someone might have typed it wrong and call the function as <code>createCharacterName Japanese</code> and then the types <code>CharacterName AmericanEurope</code> and <code>CharacterName Japanese</code> no longer matches. So we have to do some more trickery.</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">data </span><span style="color:#d08770;">SomeCharacterName </span><span>= forall ruling. </span><span style="color:#d08770;">SomeCharacterName</span><span> (</span><span style="color:#d08770;">CharacterName</span><span> ruling)
+</span><span>
+</span><span style="color:#8fa1b3;">createCharacterName </span><span style="color:#b48ead;">:: NameRule -&gt; Text -&gt; Maybe SomeCharacterName
+</span><span>createCharacterName nameRule name =
+</span><span>  </span><span style="color:#b48ead;">case</span><span> nameRule </span><span style="color:#b48ead;">of
+</span><span>    </span><span style="color:#d08770;">AmericanEurope </span><span>-&gt; </span><span style="color:#b48ead;">if</span><span> validAmericanEurope name </span><span style="color:#b48ead;">then </span><span style="color:#d08770;">Just</span><span> (</span><span style="color:#d08770;">SomeCharacterName </span><span>. </span><span style="color:#d08770;">CharacterName</span><span> @</span><span style="color:#d08770;">AmericanEurope </span><span>$ name) </span><span style="color:#b48ead;">else </span><span style="color:#d08770;">Nothing
+</span><span>    </span><span style="color:#d08770;">Japanese </span><span>-&gt; </span><span style="color:#b48ead;">if</span><span> validJapanese name </span><span style="color:#b48ead;">then </span><span style="color:#d08770;">Just</span><span> (</span><span style="color:#d08770;">SomeCharacterName </span><span>. </span><span style="color:#d08770;">CharacterName</span><span> @</span><span style="color:#d08770;">Japanese </span><span>$ name) </span><span style="color:#b48ead;">else </span><span style="color:#d08770;">Nothing
+</span><span>    </span><span style="color:#d08770;">Chinese </span><span>-&gt; </span><span style="color:#b48ead;">if</span><span> validChinese name </span><span style="color:#b48ead;">then </span><span style="color:#d08770;">Just</span><span> (</span><span style="color:#d08770;">SomeCharacterName </span><span>. </span><span style="color:#d08770;">CharacterName</span><span> @</span><span style="color:#d08770;">Japanese </span><span>$ name) </span><span style="color:#b48ead;">else </span><span style="color:#d08770;">Nothing
+</span></code></pre>
+<p>Here we use a trick called existential quantification to store the type in the value (not really, simplified explanation) to have a simpler type. Now we can return this new type based on name ruling. And in the function we return the right <code>CharacterName</code> wrapped inside a <code>SomeCharacterName</code>. <strong>uh oh, did you catch it?</strong> In the last branch we are returning a Japanese name instead of the expected Chinese one.</p>
+<h1 id="singletons">Singletons</h1>
+<p>To solve the bug introduced previously we must make sure we can't create the wrong types. And to do that we are going to use something called singletons. <em><strong>Don't panic!</strong></em> It's not a bad word in this case.</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#b48ead;">data </span><span style="color:#d08770;">SNameRule</span><span> (ruling :: </span><span style="color:#d08770;">NameRule</span><span>) </span><span style="color:#b48ead;">where
+</span><span>  </span><span style="color:#d08770;">SAmericanEurope </span><span>:: </span><span style="color:#d08770;">SNameRule AmericanEurope
+</span><span>  </span><span style="color:#d08770;">SJapanese </span><span>:: </span><span style="color:#d08770;">SNameRule Japanese
+</span><span>  </span><span style="color:#d08770;">SChinese </span><span>:: </span><span style="color:#d08770;">SNameRule Chinese
+</span><span>
+</span><span style="color:#b48ead;">class </span><span style="color:#a3be8c;">Sing </span><span style="color:#bf616a;">ruling </span><span style="color:#b48ead;">where
+</span><span>  </span><span style="color:#8fa1b3;">sing </span><span style="color:#b48ead;">:: SNameRule </span><span style="color:#bf616a;">ruling
+</span><span>  
+</span><span style="color:#b48ead;">instance Sing AmericanEurope where
+</span><span>  sing = </span><span style="color:#d08770;">SAmericanEurope
+</span><span>  
+</span><span style="color:#b48ead;">instance Sing Japanese where
+</span><span>  sing = </span><span style="color:#d08770;">SJapanese
+</span><span>
+</span><span style="color:#b48ead;">instance Sing Chinese where
+</span><span>  sing = </span><span style="color:#d08770;">SChinese
+</span></code></pre>
+<p>Here we create a GADT that constructs the appropriate type based on the constructor used. Again, GADT's has been covered greatly in other resources and I'm just touching on the subject here. The class and instances is based on the GADT saying that for any <code>NameRule</code> type we get an appropriate type of <code>SNameRule ruling</code>. All this can be omitted if you use the <a href="https://hackage.haskell.org/package/singletons"><em>singletons</em></a> package and replace the above with <code>genSingletons [''NameRule]</code> instead.</p>
+<pre data-lang="haskell" style="background-color:#2b303b;color:#c0c5ce;" class="language-haskell "><code class="language-haskell" data-lang="haskell"><span style="color:#8fa1b3;">createCharacterName </span><span style="color:#b48ead;">::</span><span> (</span><span style="color:#b48ead;">Sing </span><span style="color:#bf616a;">ruling</span><span>) </span><span style="color:#b48ead;">=&gt; Text -&gt; Maybe</span><span> (</span><span style="color:#b48ead;">CharacterName </span><span style="color:#bf616a;">ruling</span><span>)
+</span><span>createCharacterName name =
+</span><span>  </span><span style="color:#b48ead;">case</span><span> sing @ruling </span><span style="color:#b48ead;">of
+</span><span>    </span><span style="color:#d08770;">SAmericanEurope </span><span>-&gt; </span><span style="color:#b48ead;">if</span><span> validAmericanEurope name </span><span style="color:#b48ead;">then </span><span style="color:#d08770;">Just</span><span> (</span><span style="color:#d08770;">CharacterName</span><span> name) </span><span style="color:#b48ead;">else </span><span style="color:#d08770;">Nothing
+</span><span>    </span><span style="color:#d08770;">SJapanese </span><span>-&gt; </span><span style="color:#b48ead;">if</span><span> validJapanese name </span><span style="color:#b48ead;">then </span><span style="color:#d08770;">Just</span><span> (</span><span style="color:#d08770;">CharacterName</span><span> name) </span><span style="color:#b48ead;">else </span><span style="color:#d08770;">Nothing
+</span><span>    </span><span style="color:#d08770;">SChinese </span><span>-&gt; </span><span style="color:#b48ead;">if</span><span> validChinese name </span><span style="color:#b48ead;">then </span><span style="color:#d08770;">Just</span><span> (</span><span style="color:#d08770;">CharacterName</span><span> name) </span><span style="color:#b48ead;">else </span><span style="color:#d08770;">Nothing
+</span></code></pre>
+<p>Note that we no longer need to specify the type when constructing a <code>CharacterName</code>. This is because when matching on our <code>SNameRule</code> the <code>ruling</code> in both the constraint <code>Sing ruling</code> and the return type <code>CharacterName ruling</code> has to be the same. And since <code>SChinese</code> is constructing a <code>SNameRule Chinese</code> <code>ruling</code> is equal to <code>Chinese</code>. If you want a deeper dive into this checkout out <a href="https://blog.jle.im/entry/introduction-to-singletons-1.html">Introduction to Singletons</a> for a great tutorial.</p>
+<p>That is all I had to say for today, I plan on taking this further in an upcoming post, but for now I've covered what I set out to do. Thanks for your time.</p>
+</section>
+
+  <hr />
+
+  <!-- Post Taxonomies -->
+  
+<!---->
+
+  <!-- Post Nav -->
+  
+<!---->
+
+  <!-- Comment -->
+  
+
+  <!-- Page End inject -->
+  
+</article>
+
+    </main>
+
+    <footer class="mx-auto flex max-w-3xl flex-wrap items-center px-8 py-4 text-sm opacity-60">
+  <div class="mr-auto basis-full lg:basis-1/2">
+    <!---->
+    <!---->
+    &copy; 2025<!---->
+    
+    <a class="link" href="https://wgaffa.github.io">
+      Wgaffa
+    </a>
+    
+  </div>
+  <div class="flex basis-full lg:basis-1/2 lg:justify-end">
+    <a class="link mr-6 lg:ml-6" href="https://www.getzola.org/" rel="noopener" target="_blank">
+      Powered by Zola
+    </a>
+    <a class="link" href="https://github.com/st1020/kita" rel="noopener" target="_blank">✎ Kita</a>
+  </div>
+  <!-- Footer inject -->
+  
+</footer>
+
+
+    <!-- Body End inject -->
+    
+  </body>
+</html>
