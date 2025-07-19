@@ -1,2 +1,6 @@
 public/
 static/processed_images/
+_cache
+_site
+node_modules
+dist-newstyle

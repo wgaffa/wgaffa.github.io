@@ -1,0 +1,21 @@
+<ul class="list pl0">
+  $for(posts)$
+    <li class="mb3">
+        <a href="$url$" class="link blue hover-light-blue f4">$title$</a>
+      <div class="f6 gray mt1 flex flex-wrap gap1">
+        <span class="mr3">$date$</span>
+        $if(tags)$
+          <span>Tags: <span class="i">
+          $for(tags)$
+              <span>$item$</span>
+              $-sep$,
+          $endfor$
+          </span></span>
+        $else$
+          No tags
+        $endif$
+      </div>
+    </li>
+  $endfor$
+</ul>
+

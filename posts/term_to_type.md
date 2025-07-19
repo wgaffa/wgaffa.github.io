@@ -1,10 +1,11 @@
-+++
-title = "Term to Type"
-date = "2025-06-09"
-description = "How I went from term level to type level programming"
-+++
-
-# Abstract
+---
+title: "Term to Type"
+date: 2025-06-09
+description: "How I went from term level to type level programming"
+tags:
+    - type-level-programming
+    - haskell
+---
 
 When searching `type level programming` on your favorite search engine you will most likely find resources that shows the same code like *peano numbers* and *length indexed vectors* but at times I wished they could show some other examples or use cases. And while some do like Rebecca Skinners article [An Introduction to Type Level Programming](https://rebeccaskinner.net/posts/2021-08-25-introduction-to-type-level-programming.html) I seem to get lost when I try to implement something or fail to understand why I can't do certain things.
 
