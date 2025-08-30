@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wgaffa's Digital Garden - Term to Type</title>
+    <link rel="stylesheet" href="../css/tachyons.min.css" />
+    <link rel="stylesheet" href="../css/custom.css" />
+    <link rel="stylesheet" href="../css/syntax.css" />
+    <script src="../js/copy-code.js"></script>
+  </head>
+
+  <body class="bg-near-black silver sans-serif pa4 mw8 center">
+    <header class="tc pv4 mb4">
+  <h1 class="light-gray f2 lh-title ma0">
+    Wgaffa's Digital Garden
+  </h1>
+  <p class="silver f5 mt2 o-70">My scattered thoughts of a single braincell</p>
+</header>
+
+    <main>
+      <section class="article">
+  <div class="article-header">
+    <h2 class="article-title">Term to Type</h2>
+    <small class="date">June  9, 2025</small>
+  </div>
+  <div class="content"><p>When searching <code>type level programming</code> on your favorite search engine you will most likely find resources that shows the same code like <em>peano numbers</em> and <em>length indexed vectors</em> but at times I wished they could show some other examples or use cases. And while some do like Rebecca Skinners article <a href="https://rebeccaskinner.net/posts/2021-08-25-introduction-to-type-level-programming.html" class="link light-blue hover-blue">An Introduction to Type Level Programming</a> I seem to get lost when I try to implement something or fail to understand why I can’t do certain things.</p>
+<p>Although this post starts out very easy and simple there will be some advanced futures of Haskell mentioned here so a good to advanced knowledge is expected as I won’t go into what extensions are being used but are inferred.</p>
+<p>This is mostly my personal brain dump but I share this if anyone else finds this helpful.</p>
+<p>Most functions and other definitions will not have an implementation unless it’s important to understand a specific concept.</p>
+<h1 id="the-problem">The Problem</h1>
+<p>Given a character name we want to make sure it follows a specific rule where the rules are as follow:</p>
+<ul>
+<li>Does not exceed the maximum character limit (maximum 19 characters).</li>
+<li>Must use a minimum of 3 characters (a space counts as one).</li>
+<li>Must use two or more words (implies at least one space).</li>
+<li>Must use only Latin letters (digits are not allowed).</li>
+</ul>
+<p>And this is trivially done with one or more functions depending on what you prefer or use case.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">isValidCharacterName ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>isValidCharacterName <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
+<p>Here we return True if it’s a valid and False otherwise, simple and to the point.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">createValidCharacterName ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Text</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>createValidCharacterName <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
+<p>While here we lift the text up to a <code>Maybe</code> type and possibly change the input like removing leading and trailing spaces for example. Not complicated at all.</p>
+<p>This may be sufficient for many applications, but I wanted to push further and explore how to make the solution even safer at the type level.</p>
+<p>The first thing is that nothing is preventing me from changing the text after I have validated it and use a bad character name to function like</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">someFaultyTower ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>someFaultyTower <span class="ot">=</span> <span class="fu">undefined</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ot">cantStopMe ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>cantStopMe name <span class="ot">=</span> <span class="kw">if</span> isValidCharacterName name</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>	<span class="kw">then</span> someFaultyTower <span class="st">&quot;&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>	<span class="kw">else</span> someFaultyTower name</span></code></pre></div>
+<p>In the true branch I can still call the function with whatever I want or change the name to something that hasn’t been validated, likewise I can just call the supposedly good function with the invalid name. The function might want to store the name in a database or display it, but it does expect a valid name.</p>
+<p>Secondly likewise with the other function returning a <code>Maybe</code> type we can just use the functor class to change the value to something invalid for example.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">toppledTower ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Text</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>toppledTower name <span class="ot">=</span> <span class="fu">const</span> <span class="st">&quot;&quot;</span> <span class="op">&lt;$&gt;</span> createValidCharacterName name</span></code></pre></div>
+<p>If we are given a valid name we can still just map over it to whatever text we want, albeit given an invalid name this will still return a <code>Nothing</code> value.</p>
+<p>So while we do validate a <code>Text</code> in itself doesn’t hold any information whether this is a valid character name. So what can we do about it?</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">CharacterName</span> <span class="ot">=</span> <span class="dt">CharacterName</span> {<span class="ot">unCharacterName ::</span> <span class="dt">Text</span>} <span class="kw">deriving</span> (<span class="dt">Show</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ot">createCharacterName ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">CharacterName</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>createCharacterName <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
+<p>Here we create a newtype that represents a text value. And to make sure it can’t be instantiated with a bad value make sure to only export the type and <code>createCharacterName</code>. <code>createCharacterName</code> is then responsible to check for the invariants and return it in a <code>Maybe</code> type or <code>Nothing</code> otherwise. Now we can use these for different purposes like have a list of character names <code>[CharacterName]</code> or a map between Int and character name <code>Map Int CharacterName</code>. As long as we can only get a valid <code>CharacterName</code> from <code>createCharacterName</code> we know that it is a valid character name.</p>
+<h1 id="problem-extension">Problem Extension</h1>
+<p>What if we want some different naming rules depending on a value. Say we only allow these rules:</p>
+<ul>
+<li>American Europe
+<ul>
+<li>Does not exceed the maximum character limit (maximum 19 characters).</li>
+<li>Must use a minimum of 3 characters (a space counts as one).</li>
+<li>Must use two or more words (implies at least one space).</li>
+<li>Must use only Latin letters (digits are not allowed).</li>
+</ul></li>
+<li>Japanese
+<ul>
+<li>Does not exceed the maximum character limit (maximum 16 characters).</li>
+<li>Must use a minimum of 4 characters (each Japanese character counts as 2 characters).</li>
+<li>Must use at least 1 Japanese character (Latin letters are optional).</li>
+<li>Must not contain any spaces.</li>
+<li>Must use only Japanese characters and Latin letters (digits are not allowed).</li>
+</ul></li>
+<li>Chinese
+<ul>
+<li>Does not exceed the maximum character limit (maximum 16 characters).</li>
+<li>Must use a minimum of 3 characters (each Chinese character counts as 2 characters).</li>
+<li>Must use at least 1 Chinese character (Latin letters are optional).</li>
+<li>Must not contain any spaces.</li>
+<li>Must use only Chinese characters and Latin letters (digits are not allowed).</li>
+</ul></li>
+</ul>
+<p>Here we can expand on some of our functions quite easily.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">NameRule</span> <span class="ot">=</span> <span class="dt">AmericanEurope</span> <span class="op">|</span> <span class="dt">Japanese</span> <span class="op">|</span> <span class="dt">Chinese</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ot">createCharacterName ::</span> <span class="dt">NameRule</span> <span class="ot">-&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">CharacterName</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>createCharacterName <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
+<p>So we first define a sum type that holds our types of naming rules conventions and the function would then choose and validate the name based on the <code>NameRule</code> given.</p>
+<p>So we have now reached another tier of safety and we can still have the same types like before like lists of character names or an associated map. But we do loose for what type of rule was used for this name. We can’t define a function like <code>CharacterName -&gt; NameRule</code> that would be dependent on the first parameter. To solve this we can create a simple record.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">CharacterName</span> <span class="ot">=</span> <span class="dt">CharacterName</span> {<span class="ot">_characterNameRule ::</span> <span class="dt">NameRule</span>,<span class="ot"> _characterName ::</span> <span class="dt">Text</span>}</span></code></pre></div>
+<p>And we still get the same benefit as before but with some extra information. But I was experimenting with type level so lets push the name ruling to the type level instead.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">CharacterName</span> (<span class="ot">ruling ::</span> <span class="dt">NameRule</span>) <span class="ot">=</span> <span class="dt">CharacterName</span> {<span class="ot">unCharacterName ::</span> <span class="dt">Text</span>}</span></code></pre></div>
+<p>But this type does not conform to the <code>createCharacterName</code> we had before as it returns a simple <code>CharacterName</code>, so what can we do? We can try to instantiate the type based on the NameRule.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">createCharacterName ::</span> <span class="dt">NameRule</span> <span class="ot">-&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">CharacterName</span> ruling)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>createCharacterName nameRule name <span class="ot">=</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>	<span class="kw">case</span> nameRule <span class="kw">of</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>	    <span class="dt">AmericanEurope</span> <span class="ot">-&gt;</span> <span class="kw">if</span> validAmericanEurope name <span class="kw">then</span> <span class="dt">Just</span> (<span class="dt">CharacterName</span> <span class="op">@</span><span class="dt">AmericanEurope</span> name) <span class="kw">else</span> <span class="dt">Nothing</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>	    <span class="dt">Japanese</span> <span class="ot">-&gt;</span> <span class="kw">if</span> validJapanese name <span class="kw">then</span> <span class="dt">Just</span> (<span class="dt">CharacterName</span> <span class="op">@</span><span class="dt">Japanese</span> name) <span class="kw">else</span> <span class="dt">Nothing</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>	    <span class="dt">Chinese</span> <span class="ot">-&gt;</span> <span class="kw">if</span> validChinese name <span class="kw">then</span> <span class="dt">Just</span> (<span class="dt">CharacterName</span> <span class="op">@</span><span class="dt">Chinese</span> name) <span class="kw">else</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p>But this fails to compile because we are saying that we return a <code>CharacterName</code> for all <em>ruling</em>. This is called universal quantification. The caller of the function decides what <em>ruling</em> is when called. For example a function could look like this.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">manuelQuePasa ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">CharacterName</span> <span class="dt">AmericanEurope</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>manuelQuePasa <span class="ot">=</span> createCharacterName <span class="dt">AmericanEurope</span></span></code></pre></div>
+<p>This would seem to be fine but to a compiler there are options to call this function. For example someone might have typed it wrong and call the function as <code>createCharacterName Japanese</code> and then the types <code>CharacterName AmericanEurope</code> and <code>CharacterName Japanese</code> no longer matches. So we have to do some more trickery.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">SomeCharacterName</span> <span class="ot">=</span> <span class="kw">forall</span> ruling<span class="op">.</span> <span class="dt">SomeCharacterName</span> (<span class="dt">CharacterName</span> ruling)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ot">createCharacterName ::</span> <span class="dt">NameRule</span> <span class="ot">-&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">SomeCharacterName</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>createCharacterName nameRule name <span class="ot">=</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">case</span> nameRule <span class="kw">of</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">AmericanEurope</span> <span class="ot">-&gt;</span> <span class="kw">if</span> validAmericanEurope name <span class="kw">then</span> <span class="dt">Just</span> (<span class="dt">SomeCharacterName</span> <span class="op">.</span> <span class="dt">CharacterName</span> <span class="op">@</span><span class="dt">AmericanEurope</span> <span class="op">$</span> name) <span class="kw">else</span> <span class="dt">Nothing</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Japanese</span> <span class="ot">-&gt;</span> <span class="kw">if</span> validJapanese name <span class="kw">then</span> <span class="dt">Just</span> (<span class="dt">SomeCharacterName</span> <span class="op">.</span> <span class="dt">CharacterName</span> <span class="op">@</span><span class="dt">Japanese</span> <span class="op">$</span> name) <span class="kw">else</span> <span class="dt">Nothing</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Chinese</span> <span class="ot">-&gt;</span> <span class="kw">if</span> validChinese name <span class="kw">then</span> <span class="dt">Just</span> (<span class="dt">SomeCharacterName</span> <span class="op">.</span> <span class="dt">CharacterName</span> <span class="op">@</span><span class="dt">Japanese</span> <span class="op">$</span> name) <span class="kw">else</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p>Here we use a trick called existential quantification to store the type in the value (not really, simplified explanation) to have a simpler type. Now we can return this new type based on name ruling. And in the function we return the right <code>CharacterName</code> wrapped inside a <code>SomeCharacterName</code>. <strong>uh oh, did you catch it?</strong> In the last branch we are returning a Japanese name instead of the expected Chinese one.</p>
+<h1 id="singletons">Singletons</h1>
+<p>To solve the bug introduced previously we must make sure we can’t create the wrong types. And to do that we are going to use something called singletons. <strong><em>Don’t panic!</em></strong> It’s not a bad word in this case.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">SNameRule</span> (<span class="ot">ruling ::</span> <span class="dt">NameRule</span>) <span class="kw">where</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">SAmericanEurope</span><span class="ot"> ::</span> <span class="dt">SNameRule</span> <span class="dt">AmericanEurope</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">SJapanese</span><span class="ot"> ::</span> <span class="dt">SNameRule</span> <span class="dt">Japanese</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">SChinese</span><span class="ot"> ::</span> <span class="dt">SNameRule</span> <span class="dt">Chinese</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Sing</span> ruling <span class="kw">where</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="ot">  sing ::</span> <span class="dt">SNameRule</span> ruling</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Sing</span> <span class="dt">AmericanEurope</span> <span class="kw">where</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  sing <span class="ot">=</span> <span class="dt">SAmericanEurope</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Sing</span> <span class="dt">Japanese</span> <span class="kw">where</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  sing <span class="ot">=</span> <span class="dt">SJapanese</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Sing</span> <span class="dt">Chinese</span> <span class="kw">where</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  sing <span class="ot">=</span> <span class="dt">SChinese</span></span></code></pre></div>
+<p>Here we create a GADT that constructs the appropriate type based on the constructor used. Again, GADT’s has been covered greatly in other resources and I’m just touching on the subject here. The class and instances is based on the GADT saying that for any <code>NameRule</code> type we get an appropriate type of <code>SNameRule ruling</code>. All this can be omitted if you use the <a href="https://hackage.haskell.org/package/singletons" class="link light-blue hover-blue"><em>singletons</em></a> package and replace the above with <code>genSingletons [''NameRule]</code> instead.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ot">createCharacterName ::</span> (<span class="dt">Sing</span> ruling) <span class="ot">=&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">CharacterName</span> ruling)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>createCharacterName name <span class="ot">=</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">case</span> sing <span class="op">@</span>ruling <span class="kw">of</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">SAmericanEurope</span> <span class="ot">-&gt;</span> <span class="kw">if</span> validAmericanEurope name <span class="kw">then</span> <span class="dt">Just</span> (<span class="dt">CharacterName</span> name) <span class="kw">else</span> <span class="dt">Nothing</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">SJapanese</span> <span class="ot">-&gt;</span> <span class="kw">if</span> validJapanese name <span class="kw">then</span> <span class="dt">Just</span> (<span class="dt">CharacterName</span> name) <span class="kw">else</span> <span class="dt">Nothing</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">SChinese</span> <span class="ot">-&gt;</span> <span class="kw">if</span> validChinese name <span class="kw">then</span> <span class="dt">Just</span> (<span class="dt">CharacterName</span> name) <span class="kw">else</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p>Note that we no longer need to specify the type when constructing a <code>CharacterName</code>. This is because when matching on our <code>SNameRule</code> the <code>ruling</code> in both the constraint <code>Sing ruling</code> and the return type <code>CharacterName ruling</code> has to be the same. And since <code>SChinese</code> is constructing a <code>SNameRule Chinese</code> <code>ruling</code> is equal to <code>Chinese</code>. If you want a deeper dive into this checkout out <a href="https://blog.jle.im/entry/introduction-to-singletons-1.html" class="link light-blue hover-blue">Introduction to Singletons</a> for a great tutorial.</p>
+<p>That is all I had to say for today, I plan on taking this further in an upcoming post, but for now I’ve covered what I set out to do. Thanks for your time.</p></div>
+</section>
+
+    </main>
+    <footer>
+  <small>&copy; 2025 | Wgaffa's Digital Garden</small>
+</footer>
+
+  </body>
+</html>
+
+
