@@ -10,6 +10,7 @@ executable site
                   , bytestring
                   , chronos
                   , pandoc
+                  , pandoc-types
                   , process
                   , text
                   , transformers

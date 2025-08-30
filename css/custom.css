@@ -14,3 +14,12 @@ pre {
   line-height: 1.4;
 }
 
+code.sourceCode span {
+  display: inline;   /* prevent each token from breaking to a new line */
+  white-space: pre;  /* keep spacing intact */
+}
+
+.copy-btn {
+  top: 0.2rem;
+  right: 0.2rem;
+}

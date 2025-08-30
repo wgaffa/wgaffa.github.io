@@ -1,6 +1,9 @@
-public/
-static/processed_images/
 _cache
 _site
+_shake
+result
 node_modules
 dist-newstyle
+
+# Generated files
+css/tachyons.min.css

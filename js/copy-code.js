@@ -6,9 +6,9 @@ document.addEventListener("DOMContentLoaded", function () {
   codeBlocks.forEach((codeBlock) => {
     // Create the copy button
     const copyButton = document.createElement("button");
-    copyButton.className = "copy-code-button";
+    copyButton.className = "copy-btn absolute bg-dark-gray white br2 pa1 f7 dim";
     copyButton.type = "button";
-    copyButton.innerHTML = "Copy";
+    copyButton.innerHTML = "📋";
 
     // Add the button to the code block
     codeBlock.appendChild(copyButton);
@@ -26,16 +26,16 @@ document.addEventListener("DOMContentLoaded", function () {
       navigator.clipboard.writeText(text).then(
         function () {
           // Visual feedback - change button text temporarily
-          copyButton.innerHTML = "Copied!";
+          copyButton.innerHTML = "✅";
           setTimeout(function () {
-            copyButton.innerHTML = "Copy";
+            copyButton.innerHTML = "📋";
           }, 2000);
         },
         function (err) {
           console.error("Could not copy text: ", err);
           copyButton.innerHTML = "Error";
           setTimeout(function () {
-            copyButton.innerHTML = "Copy";
+            copyButton.innerHTML = "📋";
           }, 2000);
         }
       );

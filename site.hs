@@ -2,11 +2,13 @@
 
 import Data.Text (Text)
 
-import System.Process
 import Chronos
 import Hakyll
+import System.Process
 import Text.Pandoc.Highlighting (Style, breezeDark, styleToCss)
 
+import Text.Pandoc (Pandoc, Inline (..))
+import Text.Pandoc.Walk (walk)
 import Text.Pandoc.Class
 import Text.Pandoc.Options
 import Text.Pandoc.Readers
@@ -19,17 +21,17 @@ yearIO :: IO String
 yearIO = show . getYear . dateYear . datetimeDate . timeToDatetime <$> now
 
 copyFilesList :: [Identifier]
-copyFilesList = ["js/*", "icons/*", "images/*"]
+copyFilesList = ["css/tachyons.min.css"]
 
 copyRule :: Rules ()
 copyRule =
-    match (fromList copyFilesList) $ do
+    match ("js/*" .||. fromList copyFilesList) $ do
         route idRoute
         compile copyFileCompiler
 
 cssRule :: Rules ()
 cssRule = do
-    match ("css/*" .&&. complement "css/tachyons*.css") $ do
+    match ("css/*" .&&. complement "css/tachyons.min.css") $ do
         route idRoute
         compile compressCssCompiler
 
@@ -38,10 +40,9 @@ postsRule =
     match "posts/*" $ do
         route $ setExtension "html"
         compile $
-            pandocCompiler
-                >>= loadAndApplyTemplate
-                    "templates/post.html"
-                    postCtx
+            pandocCompilerWithTransform defaultHakyllReaderOptions defaultHakyllWriterOptions addLinkClasses
+                >>= loadAndApplyTemplate "templates/post.html" postCtx
+                >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
 
 indexRule :: Rules ()
@@ -53,9 +54,8 @@ indexRule =
             posts <- recentFirst =<< loadAll "posts/*"
             let
                 indexCtx =
-                    listField "posts" (constField "year" year <> postCtx) (pure posts)
+                    listField "posts" postCtx (pure posts)
                         <> constField "title" "Home"
-                        <> constField "year" year
 
                 bioCtx =
                     listField
@@ -68,20 +68,21 @@ indexRule =
                 >>= loadAndApplyTemplate "templates/default.html" (indexCtx <> bioCtx <> postCtx)
                 >>= relativizeUrls
 
+addLinkClasses :: Pandoc -> Pandoc
+addLinkClasses = walk go
+  where
+    go (Link attr inlines target) =
+        let (ident, classes, attrs) = attr
+            classes' = classes ++ ["link", "light-blue", "hover-blue"]
+        in Link (ident, classes', attrs) inlines target
+    go x = x
+
 syntaxHighlightRule :: Rules ()
 syntaxHighlightRule =
     create ["css/syntax.css"] $ do
         route idRoute
         compile $ do
             makeItem $ styleToCss pandocCodeStyle
-
-tachyonsRule :: Rules ()
-tachyonsRule = do
-    create ["css/tachyons.min.css"] $ do
-        route idRoute
-        compile $ do
-            unsafeCompiler (callProcess "npm" ["run", "build:minify"])
-            unsafeCompiler (BS.readFile "css/tachyons.min.css") >>= makeItem
 
 templateRule :: Rules ()
 templateRule = match "templates/*" $ compile templateBodyCompiler
@@ -96,7 +97,6 @@ main = do
             , indexRule
             , syntaxHighlightRule
             , templateRule
-            , tachyonsRule
             ]
 
 postCtx :: Context String
