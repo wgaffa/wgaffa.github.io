@@ -49,7 +49,6 @@ indexRule :: Rules ()
 indexRule =
     create ["index.html"] $ do
         route idRoute
-        year <- preprocess yearIO
         compile $ do
             posts <- recentFirst =<< loadAll "posts/*"
             let
