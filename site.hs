@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+import Data.List (intercalate)
+
 import Data.Text (Text)
 
 import Chronos
@@ -7,11 +9,11 @@ import Hakyll
 import System.Process
 import Text.Pandoc.Highlighting (Style, breezeDark, styleToCss)
 
-import Text.Pandoc (Pandoc, Inline (..))
-import Text.Pandoc.Walk (walk)
+import Text.Pandoc (Inline (..), Pandoc)
 import Text.Pandoc.Class
 import Text.Pandoc.Options
 import Text.Pandoc.Readers
+import Text.Pandoc.Walk (walk)
 
 import Control.Monad
 
@@ -40,10 +42,57 @@ postsRule =
     match "posts/*" $ do
         route $ setExtension "html"
         compile $
-            pandocCompilerWithTransform defaultHakyllReaderOptions defaultHakyllWriterOptions addLinkClasses
+            pandocCompilerWithTransform
+                defaultHakyllReaderOptions
+                defaultHakyllWriterOptions
+                addLinkClasses
                 >>= loadAndApplyTemplate "templates/post.html" postCtx
                 >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
+
+tagRule :: Rules ()
+tagRule = do
+    tags <- buildTags "posts/*" $ fromCapture "tags/*.html"
+    tagsRules tags $ \tagStr tagsPattern -> do
+        route $ idRoute
+        compile $ do
+            posts <- recentFirst =<< loadAll tagsPattern
+            postItemTempl <- loadBody "templates/post-item.html"
+            postList <- applyTemplateList postItemTempl postCtx posts
+
+            let tagCtx =
+                    constField "title" tagStr
+                        <> constField "postlist" postList
+                        <> constField "tag" tagStr
+                        <> defaultContext
+
+            makeItem ""
+                >>= loadAndApplyTemplate "templates/tags.html" tagCtx
+                >>= loadAndApplyTemplate "templates/default.html" tagCtx
+                >>= relativizeUrls
+
+tagList :: Rules ()
+tagList =
+    create ["tags.html"] $ do
+        route idRoute
+        tags <- buildTags "posts/*" $ fromCapture "tags/*.html"
+        compile $ do
+            taglist <- renderTags produceTag joinTags tags
+            makeItem taglist
+                >>= loadAndApplyTemplate "templates/tag-list.html" postCtx
+                >>= loadAndApplyTemplate "templates/default.html" postCtx
+                >>= relativizeUrls
+  where
+    produceTag tag url count minCount maxCount =
+        "<a href='"
+            ++ url
+            ++ "' class='link dim br2 ph2 pv1 bg-dark-gray light-blue hover-blue'>"
+            ++ tag
+            ++ " ("
+            ++ show count
+            ++ ")"
+            ++ "</a>"
+    joinTags = concatMap (\tag -> "<li class='ma1'>" ++ tag ++ "</li>")
 
 indexRule :: Rules ()
 indexRule =
@@ -73,7 +122,7 @@ addLinkClasses = walk go
     go (Link attr inlines target) =
         let (ident, classes, attrs) = attr
             classes' = classes ++ ["link", "light-blue", "hover-blue"]
-        in Link (ident, classes', attrs) inlines target
+         in Link (ident, classes', attrs) inlines target
     go x = x
 
 syntaxHighlightRule :: Rules ()
@@ -95,6 +144,8 @@ main = do
             , postsRule
             , indexRule
             , syntaxHighlightRule
+            , tagRule
+            , tagList
             , templateRule
             ]
 
