@@ -41,12 +41,24 @@ postsRule :: Rules ()
 postsRule =
     match "posts/*" $ do
         route $ setExtension "html"
-        compile $
+        compile $ do
+            tags <- getTags =<< getUnderlying
+            tagList <- buildTags "posts/**" $ fromCapture "/tags/*.html"
+            let
+                ctx =
+                    listField
+                        "tags"
+                        ( field "tag" (pure . itemBody)
+                            <> field "tagurl" (pure . toFilePath . tagsMakeId tagList . itemBody)
+                        )
+                        (sequence . fmap makeItem $ tags)
+                        <> defaultContext
+
             pandocCompilerWithTransform
                 defaultHakyllReaderOptions
                 defaultHakyllWriterOptions
                 addLinkClasses
-                >>= loadAndApplyTemplate "templates/post.html" postCtx
+                >>= loadAndApplyTemplate "templates/post.html" ctx
                 >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
 
