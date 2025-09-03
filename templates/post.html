@@ -1,11 +1,10 @@
-<section class="article">
-  <div class="article-header">
-    <h2 class="article-title">$title$</h2>
-    <small class="date">$date$</small>
+<section>
+  <div>
+    <h2>$title$</h2>
+    <small>$date$</small>
     $for(tags)$
-      <a href="$tagurl$">$tag$</a>
-      $-sep$,
+      <span class="pr2"><a href="$tagurl$" class="f5 link light-gray bg-purple ph2 pv1 br-pill grow mb2 dib">$tag$</a></span>
     $endfor$
   </div>
-  <div class="content">$body$</div>
+  <div>$body$</div>
 </section>

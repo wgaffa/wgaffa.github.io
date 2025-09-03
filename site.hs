@@ -37,21 +37,20 @@ cssRule = do
         route idRoute
         compile compressCssCompiler
 
-postsRule :: Rules ()
-postsRule =
-    match "posts/*" $ do
+postsRule :: Tags -> Rules ()
+postsRule tags =
+    match "posts/**" $ do
         route $ setExtension "html"
         compile $ do
-            tags <- getTags =<< getUnderlying
-            tagList <- buildTags "posts/**" $ fromCapture "/tags/*.html"
+            postTags <- getTags =<< getUnderlying
             let
                 ctx =
                     listField
                         "tags"
                         ( field "tag" (pure . itemBody)
-                            <> field "tagurl" (pure . toFilePath . tagsMakeId tagList . itemBody)
+                            <> field "tagurl" (pure . ('/' :) . toFilePath . tagsMakeId tags . itemBody)
                         )
-                        (sequence . fmap makeItem $ tags)
+                        (sequence . fmap makeItem $ postTags)
                         <> defaultContext
 
             pandocCompilerWithTransform
@@ -62,9 +61,8 @@ postsRule =
                 >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
 
-tagRule :: Rules ()
-tagRule = do
-    tags <- buildTags "posts/*" $ fromCapture "tags/*.html"
+tagRule :: Tags -> Rules ()
+tagRule tags = do
     tagsRules tags $ \tagStr tagsPattern -> do
         route $ idRoute
         compile $ do
@@ -83,11 +81,10 @@ tagRule = do
                 >>= loadAndApplyTemplate "templates/default.html" tagCtx
                 >>= relativizeUrls
 
-tagList :: Rules ()
-tagList =
+tagList :: Tags -> Rules ()
+tagList tags =
     create ["tags.html"] $ do
         route idRoute
-        tags <- buildTags "posts/*" $ fromCapture "tags/*.html"
         compile $ do
             taglist <- renderTags produceTag joinTags tags
             makeItem taglist
@@ -149,15 +146,16 @@ templateRule = match "templates/*" $ compile templateBodyCompiler
 
 main :: IO ()
 main = do
-    hakyll $
+    hakyll $ do
+        tags <- buildTags "posts/**" $ fromCapture "tags/*.html"
         sequence_
             [ cssRule
             , copyRule
-            , postsRule
+            , postsRule tags
             , indexRule
             , syntaxHighlightRule
-            , tagRule
-            , tagList
+            , tagRule tags
+            , tagList tags
             , templateRule
             ]
 
