@@ -171,6 +171,6 @@ metadataListField = Context $ \k _ i -> do
     values <- getMetadataListField (itemIdentifier i) k
     case values of
         Just vs -> do
-            listItems <- mapM makeItem vs
+            listItems <- traverse makeItem vs
             pure $ ListField (field "item" (pure . itemBody)) listItems
         Nothing -> noResult $ "Tried field " ++ k
