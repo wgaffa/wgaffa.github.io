@@ -100,7 +100,7 @@ indexRule =
     create ["index.html"] $ do
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAll "posts/*"
+            posts <- recentFirst =<< loadAll "posts/**"
             let
                 indexCtx =
                     listField "posts" postCtx (pure posts)
@@ -134,7 +134,7 @@ syntaxHighlightRule =
             makeItem $ styleToCss pandocCodeStyle
 
 templateRule :: Rules ()
-templateRule = match "templates/*" $ compile templateBodyCompiler
+templateRule = match "templates/**" $ compile templateBodyCompiler
 
 main :: IO ()
 main = do
