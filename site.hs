@@ -4,7 +4,6 @@ import Data.List (intercalate)
 
 import Data.Text (Text)
 
-import Chronos
 import Hakyll
 import System.Process
 import Text.Pandoc.Highlighting (Style, breezeDark, styleToCss)
@@ -18,9 +17,6 @@ import Text.Pandoc.Walk (walk)
 import Control.Monad
 
 import Data.ByteString qualified as BS
-
-yearIO :: IO String
-yearIO = show . getYear . dateYear . datetimeDate . timeToDatetime <$> now
 
 copyFilesList :: [Identifier]
 copyFilesList = ["css/tachyons.min.css"]
