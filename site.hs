@@ -14,6 +14,8 @@ import Text.Pandoc.Options
 import Text.Pandoc.Readers
 import Text.Pandoc.Walk (walk)
 
+import Formatting
+
 import Control.Monad
 
 import Data.ByteString qualified as BS
@@ -88,16 +90,10 @@ tagList tags =
                 >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
   where
-    produceTag tag url count minCount maxCount =
-        "<a href='"
-            ++ url
-            ++ "' class='link dim br2 ph2 pv1 bg-dark-gray light-blue hover-blue'>"
-            ++ tag
-            ++ " ("
-            ++ show count
-            ++ ")"
-            ++ "</a>"
-    joinTags = concatMap (\tag -> "<li class='ma1'>" ++ tag ++ "</li>")
+    produceTag tag url count minCount maxCount = formatToString
+        ("<a href='" % string % "' class='link dim br2 ph2 pv1 bg-dark-gray light-blue hover-blue'>"
+            % string % " (" % int % ")</a>") url tag count
+    joinTags = concatMap $ formatToString ("<li class='ma1'>" % string % "</li>")
 
 indexRule :: Rules ()
 indexRule =
