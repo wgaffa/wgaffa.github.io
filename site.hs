@@ -131,7 +131,7 @@ syntaxHighlightRule =
     create ["css/syntax.css"] $ do
         route idRoute
         compile $ do
-            makeItem $ styleToCss pandocCodeStyle
+            makeItem (styleToCss pandocCodeStyle) >>= makeItem . compressCss . itemBody
 
 templateRule :: Rules ()
 templateRule = match "templates/**" $ compile templateBodyCompiler
