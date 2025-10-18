@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wgaffa's Digital Garden - Learn Haskell with Advent of Code, 2015 day 1</title>
+    <link rel="stylesheet" href="../../css/tachyons.min.css" />
+    <link rel="stylesheet" href="../../css/custom.css" />
+    <link rel="stylesheet" href="../../css/syntax.css" />
+    <script src="../../js/copy-code.js"></script>
+    <script src="../../js/spoiler.js"></script>
+  </head>
+
+  <body class="bg-near-black silver sans-serif pa4 mw8 center">
+    <header class="tc pv4 mb4">
+  <h1 class="light-gray f2 lh-title ma0">
+    Wgaffa's Digital Garden
+  </h1>
+  <p class="silver f5 mt2 o-70">My scattered thoughts of a single braincell</p>
+</header>
+
+    <main>
+      <section>
+  <div>
+    <h1 class="f2">Learn Haskell with Advent of Code, 2015 day 1</h1>
+    <small>2025-10-18</small>
+    
+  </div>
+  <div><h1 id="problem">Problem</h1>
+<p>The full problem statement is at <a href="https://adventofcode.com/2015/day/1" class="link light-blue hover-blue">Advent of Code 2015 day 1</a>.</p>
+<p>We are tasked to find what floor Santa ultimately ends up on after using an elevator
+and following an instruction consisting of ‘<strong>(</strong>’ for going up and ‘<strong>)</strong>’ for going down.</p>
+<h2 id="breaking-it-down">Breaking it down</h2>
+<p>Let’s break this down a bit. Try to think of what data you need and what you need to use
+that data to get your end result.</p>
+<div class="spoiler" data-label="breakdown">
+<ul>
+<li>Read contents of a file</li>
+<li>Represent an Up and Down value</li>
+<li>Each character should map to an <em>Up</em> or <em>Down</em> value</li>
+<li>Transforming a list of characters into a list <em>Up</em> and <em>Down</em> values</li>
+<li>Map a <em>Direction</em> value into an elevation change representation</li>
+<li>Transform the list of <em>Up</em> and <em>Down</em> values to a list of integers</li>
+<li>Add each number up in the list of integers</li>
+</ul>
+</div>
+<section id="read-contents-of-a-file" class="spoiler" data-label="first step">
+<h3>Read contents of a file</h3>
+<p>To read from a file there is a simple function named <em>readFile</em> with the type <code>FilePath -&gt; IO String</code>.
+The result of the file will be inside an IO monad and for now the only thing you need is a way to
+retrieve that <em>String</em> from inside the IO. We can bind the value inside the IO monad with the <em>&lt;-</em> arrow,
+<strong>but</strong> only if we are inside an IO monad ourselves. We will use this in our main like this.</p>
+<pre><code>main :: IO ()
+main = do
+    contents &lt;- readFile &quot;input.txt&quot;
+    ...</code></pre>
+<p>The <code>readFile "input.txt"</code> is an <em>IO</em> action and specifically it has the type <code>IO String</code> that
+when executed by the runtime produces a <code>String</code>. <code>contents</code> is then bound to
+this <code>String</code> where we can use it for further processing.</p>
+<p>But for now just <strong>Trust me bro</strong>, it hopefully will become clearer the more you get used to it.</p>
+</section>
+<section id="represent-an-up-and-down-value" class="spoiler" data-label="second step">
+<h3>Represent an Up and Down value</h3>
+<p>Here we have to think how to represent an <em>Up</em> or <em>Down</em> value instead of its character
+representation. We do this more for clarity and code quality and is strictly not needed
+for Advent of Code problems most of the time.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Direction</span> <span class="ot">=</span> <span class="dt">Up</span> <span class="op">|</span> <span class="dt">Down</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> (<span class="dt">Show</span>)</span></code></pre></div>
+<p>The <code>data</code> keyword introduces a new type <em>Direction</em> for us to use that can hold one of
+two values, it’s either an <code>Up</code> or <code>Down</code> value.</p>
+</section>
+<section id="each-character-should-map-to-an-up-or-down-value" class="spoiler" data-label="third step">
+<h3>Each character should map to an <em>Up</em> or <em>Down</em> value</h3>
+<p>We need a way to map a character to a <code>Direction</code> value and we do that with a function
+that takes a <code>Char</code> as input and returns <code>Direction</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">charToDirection ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Direction</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>charToDirection <span class="ch">'('</span> <span class="ot">=</span> <span class="dt">Up</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>charToDirection <span class="ch">')'</span> <span class="ot">=</span> <span class="dt">Down</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>charToDirection ch <span class="ot">=</span> <span class="fu">error</span> <span class="op">$</span> <span class="st">&quot;Critical error, unrecognized input &quot;</span> <span class="op">++</span> [ch]</span></code></pre></div>
+<p>Here we start by declaring the function <code>charToDirection</code> as the type <code>Char -&gt; Direction</code>
+and in simple terms this means this is a function that takes a <code>Char</code> type and maps that to
+a type of <code>Direction</code>.</p>
+<p>We then proceed to do some <em>pattern matching</em> on the <code>Char</code> type and check if it’s an ‘<em>(</em>’ or ‘<em>)</em>’
+and maps those values to <code>Up</code> and <code>Down</code> respectively.</p>
+<p>The last clause uses the variable <em>ch</em> to match all remaining characters.
+Since AoC input aren’t very specific on how to handle unknown input, we exit with a panic message
+on the last line. We could use better error handling but what should we return instead?
+The AoC does not state what should happen if something goes wrong so I opt to just
+throw an error message and quit the program.</p>
+<p>The <code>++</code> is a function that concatenates two lists together. So therefore we need to take
+the character and surround it with brackets to make it a one element list, making it a list
+and able to concatenate it with the first list.</p>
+<p><strong>Note</strong> that the pattern matches are matched one after another.
+If the last line would be moved to the top, then it would always match and would always throw
+an error. Do keep in mind the ordering of pattern matches.</p>
+<p>Here’s an example that would always crash for example</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">charToDirectionCrash ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Direction</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>charToDirectionCrash ch <span class="ot">=</span> <span class="fu">error</span> <span class="op">$</span> <span class="st">&quot;Critical error, unrecognized input &quot;</span> <span class="op">++</span> [ch]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>charToDirectionCrash <span class="ch">'('</span> <span class="ot">=</span> <span class="dt">Up</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>charToDirectionCrash <span class="ch">')'</span> <span class="ot">=</span> <span class="dt">Down</span></span></code></pre></div>
+</section>
+<section id="transforming-a-list-of-characters-into-a-list-up-and-down-values" class="spoiler" data-label="step four">
+<h3>Transforming a list of characters into a list <em>Up</em> and <em>Down</em> values</h3>
+<p>Now we want to take a list of characters and turn that into a list of <code>Direction</code> values
+that are either <em>Up</em> or <em>Down</em>. So we have a <code>[Char]</code> also known as <code>String</code> and want to
+transform that into a <code>[Direction]</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">instructionParser ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">Direction</span>]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>instructionParser [] <span class="ot">=</span> []</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>instructionParser (x <span class="op">:</span> xs) <span class="ot">=</span> charToDirection x <span class="op">:</span> instructionParser xs</span></code></pre></div>
+<div class="spoiler pl3" data-label="Intermediate technique">
+<p>You can use the below function as well and to understand it I suggest learning more about
+<em>Functors</em>. <strong>Note</strong> that the argument is now gone from the implementation of <code>functorVariant</code>,
+this is something called either <em>tacit</em> or <em>point free</em> programming and is something that
+I suggest you should get used to. Note that it also reduces some readability so use it but
+it also takes away something that we programmers have a hard time to do, namely to name variables.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">functorVariant ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">Direction</span>]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>functorVariant <span class="ot">=</span> <span class="fu">fmap</span> charToDirection</span></code></pre></div>
+</div>
+</section>
+<section id="map-a-direction-value-into-an-elevation-change-representation" class="spoiler" data-label="step five">
+<h3>Map a <em>Direction</em> value into an elevation change representation</h3>
+<p>We are still not able to use a <em>Direction</em> type as a value to add together and therefore we
+create a new function that maps a <em>Direction</em> to an integer value that represent the elevation change
+of each direction.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">elevationChange ::</span> <span class="dt">Direction</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>elevationChange <span class="dt">Up</span> <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>elevationChange <span class="dt">Down</span> <span class="ot">=</span> <span class="op">-</span><span class="dv">1</span></span></code></pre></div>
+</section>
+<section id="transform-the-list-of-up-and-down-values-to-a-list-of-integers" class="spoiler" data-label="step six">
+<h3>Transform the list of <em>Up</em> and <em>Down</em> values to a list of integers</h3>
+<p>If we have a list of <em>Direction</em> and wants a list of integers based on each of the values in
+the list we need a function that takes each element of the list and applies a function to that value
+and returns a new list for each of those function applications.</p>
+<p>Luckily there exists one of those already for the <em>List</em> type called map, or fmap.
+Our new function then becomes:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">elevations ::</span> [<span class="dt">Direction</span>] <span class="ot">-&gt;</span> [<span class="dt">Int</span>]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>elevations <span class="ot">=</span> <span class="fu">fmap</span> elevationChange</span></code></pre></div>
+</section>
+<section id="add-each-number-up-in-the-list-of-integers" class="spoiler" data-label="step seven">
+<h3>Add each number up in the list of integers</h3>
+<p>To get the sum of all integers we can take the help of the function <em>sum</em> that has the type
+<code>[Int] -&gt; Int</code> in our case. <em>sum</em> actually has a different type with polymorphic types
+but let’s not get into that. This means we can call sum after we have our list of elevation changes.
+The expression on the right uses something called function composition and is essentially a way to
+chain several functions together into one single one.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">solvePart1 ::</span> [<span class="dt">Direction</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>solvePart1 <span class="ot">=</span> <span class="fu">sum</span> <span class="op">.</span> elevations</span></code></pre></div>
+<p>Remember that we had these types before <code>instructionParser :: String -&gt; [Direction]</code>, <code>elevations :: [Direction] -&gt; [Int]</code> and <code>sum :: [Int] -&gt; Int</code>.
+Together they become a function with the type <code>String -&gt; Int</code>.</p>
+<p>In haskell we like to boast about referential transparency and we can show that here easily. What referential
+transparency means is we can just replace values with their implementation. Take the <em>elevations</em> part for example
+in the function expression, we can replace that with the content of that function where it then reads
+<code>solvePart1 = sum . fmap elevationChange</code>. And it will behave the same.</p>
+<p>So let’s put our puzzle pieces together into our main that is the entry point of our application.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    content <span class="ot">&lt;-</span> <span class="fu">readFile</span> <span class="st">&quot;input.txt&quot;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> part1 <span class="ot">=</span> solvePart1 <span class="op">.</span> instructionParser <span class="op">$</span> content</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        part2 <span class="ot">=</span> solvePart2 <span class="op">.</span> instructionParser <span class="op">$</span> content</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span> part1</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span> part2</span></code></pre></div>
+<p>When we chain many commands inside a monad we use the <em>do</em> syntax to do that.</p>
+<p>Next we use the special syntax <em>&lt;-</em> to bind the result of an IO monad to the pattern on the left.
+And remember that we are currently in an IO monad so this is acceptable and here we use a catch all
+pattern with the named <em>content</em> so that we can reference it later.</p>
+<p>After that we create a local binding with the <em>let</em> keyword.</p>
+<div class="spoiler" data-label="Further improvements using functors">
+<p>As many programmers hate is repeating ourselves. Although for this short Advent of Code problem we might
+not bother but for the sake of learning.</p>
+<p>See that <code>. instructionParser $ content</code>? We are describing the same behaviour on <em>content</em> but never
+use <em>content</em> without its raw string input as it was read from the file. Let’s combine this using
+another function used when working on Functors, namely the <code>&lt;$&gt;</code>. The <code>&lt;$&gt;</code> function is exactly like <code>fmap</code>
+but with the arguments flipped.</p>
+<p>So remember that <code>readFile "input.txt"</code> is an <code>IO String</code>, and IO is a <em>functor</em> so we can use <code>fmap</code> or <code>&lt;$&gt;</code>.
+Therefore we can rewrite our main to look like this. <strong>NOTE:</strong> Since this is a runnable version of the blog I’m
+creating a <code>main2</code> function but you are free to change <code>main</code> if you wish or even call <code>main2</code> in <code>main</code>.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ot">main2 ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>main2 <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    parsedContent <span class="ot">&lt;-</span> instructionParser <span class="op">&lt;$&gt;</span> <span class="fu">readFile</span> <span class="st">&quot;input.txt&quot;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> part1 <span class="ot">=</span> solvePart1 parsedContent</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        part2 <span class="ot">=</span> solvePart2 parsedContent</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span> part1</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span> part2</span></code></pre></div>
+<p>What we now do is that <code>readFile "input.txt"</code> passes its result, that is the contents of the file to
+the function on the left of <code>&lt;$&gt;</code> which is our <code>instructionParser</code> for us. Can you guess what the
+type of <code>instructionParser &lt;$&gt; readFile "input.txt"</code> is?</p>
+<p>Since <code>readFile "input.txt"</code> is of type <code>IO String</code> and passes that <code>String</code> forward to <code>instructionParser :: String -&gt; [Direction]</code>,
+that means the whole expression is of type <code>IO [Direction]</code>. And we then just pass that down to
+our two solvePart functions to do their work.</p>
+</div>
+</section>
+<section id="part-2" class="spoiler pt2" data-label="Part 2">
+<h2>Part 2</h2>
+<p>Now we want to find the position where he enters the basement (-1) for the first time.
+How would you break down this given what we have already from part 1?</p>
+<div class="spoiler" data-label="breakdown">
+<ul>
+<li>Generate a list of floors santa is on at each instruction</li>
+<li>Only keep a sublist up to the first basement floor</li>
+<li>The position would be the length of that list</li>
+</ul>
+</div>
+<div class="spoiler" data-label="first step">
+<p>One way to generate a list is with the <code>scanl</code> function with the type <code>(b -&gt; a -&gt; b) -&gt; b -&gt; [a] -&gt; [b]</code>.
+That can be a scary looking signature at first so let’s break it down a bit.</p>
+<p>Let’s look at the two last types in between the arrows. That’s <code>[a] -&gt; [b]</code>, so we give it a list
+of <em>a’s</em> and we get a new list of <em>b’s</em>. Simple enough. But how does it know how to turn one type to another?</p>
+<p>First we need to give it a starting value, here noted as <em>b</em>. Since a list can have zero items the first item in
+the new list is always the starting value.</p>
+<p>Next let’s take a look at the first argument that is a function of type <code>b -&gt; a -&gt;b</code>. This takes a
+value of type <code>b</code> and another of type <code>a</code> and we are supposed to return something of type <code>b</code> which
+goes into our new list. The <code>b</code> here is the same as our starting value explained in previous paragraph. The <code>scanl</code>
+<code>a</code> is then each value of the list <code>[a]</code> together with the <em>updated</em> <code>b</code> value from each iteration starting with
+the starting value.</p>
+<p>But what would our function be? We would like to calculate the new floor of each iteration.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">calculateNewFloor ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Direction</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>calculateNewFloor currentFloor direction <span class="ot">=</span> currentFloor <span class="op">+</span> elevationChange direction</span></code></pre></div>
+<p>Here we replace the <code>b</code> with <code>Int</code> since we want the floor numbers at each position. The <code>a</code> is replaced
+with <code>Direction</code>. So we take the floor we are on and add it to the <code>elevationChange</code> of the Direction and
+this either gives us an increase or decrease of floor number.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ot">newFloorGenerator ::</span> [<span class="dt">Direction</span>] <span class="ot">-&gt;</span> [<span class="dt">Int</span>]</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>newFloorGenerator <span class="ot">=</span> <span class="fu">scanl</span> calculateNewFloor <span class="dv">0</span></span></code></pre></div>
+<p>Here we put it all together and use <code>scanl</code> with <code>calculateNewFloor</code> and our starting floor of 0.</p>
+<p>An example list generated by <code>scanl</code> given the instructions <code>[Up, Down, Up, Down, Down]</code> would be
+<code>[0, 1, 0, 1, 0, -1]</code>. The first 0 is the starting value given to <code>scanl</code>.</p>
+</div>
+<div class="spoiler" data-label="second step">
+<p>Now we are only interested in only a few of the elements. We wish to take only the values as long
+as they are above or equal to ground floor (0). And to do that we use the function
+<code>takeWhile :: (a -&gt; Bool) -&gt; [a] -&gt; [a]</code>. As you may notice this function again takes a function
+as an argument. This is normal in Haskell and this is what is called a Higher Order Function, a
+function that takes a function as an argument.</p>
+<p>So what does <code>takeWhile</code> do? Notice that it takes a list of <code>a</code> and returns a list of the same <code>a</code>.
+<code>takeWhile</code> keeps elements from the start of the list as long as the predicate returns True,
+and stops as soon as the predicate returns False. What do you think <code>takeWhile (\a -&gt; True) [1..5]</code> gives us?</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ot">takeSubListFloor ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> [<span class="dt">Int</span>]</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>takeSubListFloor <span class="ot">=</span> <span class="fu">takeWhile</span> (\a <span class="ot">-&gt;</span> a <span class="op">&gt;=</span> <span class="dv">0</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="ot">takeSubListFloorTacit ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> [<span class="dt">Int</span>]</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>takeSubListFloorTacit <span class="ot">=</span> <span class="fu">takeWhile</span> (<span class="op">&gt;=</span><span class="dv">0</span>)</span></code></pre></div>
+<p>This now takes the first sub list of numbers that are 0 and above. I show two functions here
+that are the same but the more we go into each problem I’ll be starting to drop the longer
+version and use tacit or point free style more often. It is good to start getting used to it
+early on I think, especially for short functions like these.</p>
+</div>
+<div class="spoiler" data-label="third step">
+<p>Now to get the length of a list there exist such a function <code>length :: [a] -&gt; Int</code> that takes
+a list of <code>a</code> and gives us the length of that list.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getPosition ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>getPosition <span class="ot">=</span> <span class="fu">length</span></span></code></pre></div>
+<p>That’s all there is to it. We are saying that the position is the same as the length function.</p>
+<p>Let’s now get our pieces together using function composition. Note that since <code>getPosition</code> is
+actually the same as <code>length</code> we can ignore the <code>getPosition</code> function and replace it with <code>length</code>.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ot">combinedPart2 ::</span> [<span class="dt">Direction</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>combinedPart2 <span class="ot">=</span> <span class="fu">length</span> <span class="op">.</span> takeSubListFloor <span class="op">.</span> newFloorGenerator</span></code></pre></div>
+<p>We can now call <code>combinedPart2</code> from <code>main</code> and give it our parsedContent. But we can do better.
+Let’s use referential transparency here and replace our function calls with their implementation.
+That gives us this implementation of our part 2 solver.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ot">solvePart2 ::</span> [<span class="dt">Direction</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>solvePart2 <span class="ot">=</span> <span class="fu">length</span> <span class="op">.</span> <span class="fu">takeWhile</span> (<span class="op">&gt;=</span><span class="dv">0</span>) <span class="op">.</span> <span class="fu">scanl</span> (\b <span class="ot">-&gt;</span> (<span class="op">+</span>b) <span class="op">.</span> elevationChange) <span class="dv">0</span></span></code></pre></div>
+</div>
+</section></div>
+</section>
+
+    </main>
+    <footer>
+  <small>&copy; 2025 | Wgaffa's Digital Garden</small>
+</footer>
+
+  </body>
+</html>
+
+
