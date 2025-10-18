@@ -87,9 +87,9 @@ tagRule tags = do
                 >>= loadAndApplyTemplate "templates/default.html" tagCtx
                 >>= relativizeUrls
 
-tagList :: Tags -> Rules ()
-tagList tags =
-    create ["tags.html"] $ do
+tagList :: Identifier -> Tags -> Rules ()
+tagList ident tags =
+    create [ident] $ do
         route idRoute
         compile $ do
             taglist <- renderTags produceTag joinTags tags
@@ -186,6 +186,7 @@ main :: IO ()
 main = do
     hakyll $ do
         tags <- buildTags "posts/**" $ fromCapture "tags/*.html"
+        cats <- buildCategories "posts/**" $ fromCapture "categories/*.html"
         sequence_
             [ cssRule
             , copyRule
@@ -193,8 +194,9 @@ main = do
             , indexRule
             , syntaxHighlightRule
             , tagRule tags
-            , tagList tags
-            , categories
+            , tagList "tags.html" tags
+            , tagRule cats
+            , tagList "categories.html" cats
             , templateRule
             ]
 
