@@ -15,9 +15,16 @@
   <body class="bg-near-black silver sans-serif pa4 mw8 center">
     <header class="tc pv4 mb4">
   <h1 class="light-gray f2 lh-title ma0">
-    Wgaffa's Digital Garden
+    <a href="../../" class="link white dim">Wgaffa's Digital Garden</a>
   </h1>
   <p class="silver f5 mt2 o-70">My scattered thoughts of a single braincell</p>
+
+  <nav class="w-100 bg-near-black pa3 flex items-center justify-between">
+    <div class="flex items-center">
+      <a href="../../tags.html" class="f6 link light-gray dim mr3">Tags</a>
+      <a href="../../categories.html" class="f6 link light-gray dim mr3">Categories</a>
+    </div>
+  </nav>
 </header>
 
     <main>
@@ -51,10 +58,10 @@ that data to get your end result.</p>
 The result of the file will be inside an IO monad and for now the only thing you need is a way to
 retrieve that <em>String</em> from inside the IO. We can bind the value inside the IO monad with the <em>&lt;-</em> arrow,
 <strong>but</strong> only if we are inside an IO monad ourselves. We will use this in our main like this.</p>
-<pre><code>main :: IO ()
-main = do
-    contents &lt;- readFile &quot;input.txt&quot;
-    ...</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell ignore"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    contents <span class="ot">&lt;-</span> <span class="fu">readFile</span> <span class="st">&quot;input.txt&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pure</span> ()</span></code></pre></div>
 <p>The <code>readFile "input.txt"</code> is an <em>IO</em> action and specifically it has the type <code>IO String</code> that
 when executed by the runtime produces a <code>String</code>. <code>contents</code> is then bound to
 this <code>String</code> where we can use it for further processing.</p>
