@@ -51,21 +51,25 @@ postsRule tags =
                         (sequence . fmap makeItem $ postTags)
                         <> defaultContext
 
-            pandocCompilerWithTransform
-                ( defaultHakyllReaderOptions
-                    { readerExtensions =
-                        enableExtension Ext_raw_html (readerExtensions defaultHakyllReaderOptions)
-                    }
-                )
-                ( defaultHakyllWriterOptions
-                    { writerExtensions =
-                        enableExtension Ext_raw_html (writerExtensions defaultHakyllWriterOptions)
-                    }
-                )
-                addLinkClasses
+            myCompiler
                 >>= loadAndApplyTemplate "templates/post.html" ctx
                 >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
+
+myCompiler :: Compiler (Item String)
+myCompiler =
+    pandocCompilerWithTransform
+        ( defaultHakyllReaderOptions
+            { readerExtensions =
+                enableExtension Ext_fenced_code_attributes $ enableExtension Ext_raw_html (readerExtensions defaultHakyllReaderOptions)
+            }
+        )
+        ( defaultHakyllWriterOptions
+            { writerExtensions =
+                enableExtension Ext_fenced_code_attributes $ enableExtension Ext_raw_html (writerExtensions defaultHakyllWriterOptions)
+            }
+        )
+        addLinkClasses
 
 tagRule :: Tags -> Rules ()
 tagRule tags = do
@@ -134,34 +138,6 @@ indexRule =
                 >>= loadAndApplyTemplate "templates/blog.html" (indexCtx <> postCtx)
                 >>= loadAndApplyTemplate "templates/default.html" (indexCtx <> bioCtx <> postCtx)
                 >>= relativizeUrls
-
-categories :: Rules ()
-categories =
-    create ["categories.html"] $ do
-        route idRoute
-        compile $ do
-            cats <- buildCategories "posts/**" $ fromCapture "categories/*.html"
-            -- unsafeCompiler $ putStrLn . show $ tagsMap cats
-            taglist <- renderTags produceTag joinTags cats
-            makeItem taglist
-                >>= loadAndApplyTemplate "templates/tag-list.html" postCtx
-                >>= loadAndApplyTemplate "templates/default.html" postCtx
-                >>= relativizeUrls
-  where
-    produceTag tag url count minCount maxCount =
-        formatToString
-            ( "<a href='"
-                % string
-                % "' class='link dim br2 ph2 pv1 bg-dark-gray light-blue hover-blue'>"
-                % string
-                % " ("
-                % int
-                % ")</a>"
-            )
-            url
-            tag
-            count
-    joinTags = concatMap $ formatToString ("<li class='ma1'>" % string % "</li>")
 
 addLinkClasses :: Pandoc -> Pandoc
 addLinkClasses = walk go
