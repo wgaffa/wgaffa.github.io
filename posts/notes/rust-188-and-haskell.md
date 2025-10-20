@@ -1,6 +1,6 @@
 ---
 date: 2025-10-20
-title: Rust 1.88 `let_chains` compared to Haskell
+title: Rust 1.88 let_chains compared to Haskell
 ---
 
 A while ago rust released version 1.88 and I read it and thought it was similar to how haskell
