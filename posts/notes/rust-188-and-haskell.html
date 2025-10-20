@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wgaffa's Digital Garden - Rust 1.88 let_chains compared to Haskell</title>
+    <link rel="stylesheet" href="../../css/tachyons.min.css" />
+    <link rel="stylesheet" href="../../css/custom.css" />
+    <link rel="stylesheet" href="../../css/syntax.css" />
+    <script src="../../js/copy-code.js"></script>
+    <script src="../../js/spoiler.js"></script>
+  </head>
+
+  <body class="bg-near-black silver sans-serif pa4 mw8 center">
+    <header class="tc pv4 mb4">
+  <h1 class="light-gray f2 lh-title ma0">
+    <a href="../../" class="link white dim">Wgaffa's Digital Garden</a>
+  </h1>
+  <p class="silver f5 mt2 o-70">My scattered thoughts of a single braincell</p>
+
+  <nav class="w-100 bg-near-black pa3 flex items-center justify-between">
+    <div class="flex items-center">
+      <a href="../../tags.html" class="f6 link light-gray dim mr3">Tags</a>
+      <a href="../../categories.html" class="f6 link light-gray dim mr3">Categories</a>
+    </div>
+  </nav>
+</header>
+
+    <main>
+      <section>
+  <div>
+    <h1 class="f2">Rust 1.88 let_chains compared to Haskell</h1>
+    <small>2025-10-20</small>
+    
+  </div>
+  <div><p>A while ago rust released version 1.88 and I read it and thought it was similar to how haskell
+worked and thought I’d compare these two.</p>
+<p>In the post they posted <a href="https://blog.rust-lang.org/2025/06/26/Rust-1.88.0/" class="link light-blue hover-blue">here</a> they have the following
+code example.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">let</span> <span class="pp">Channel::</span>Stable(v) <span class="op">=</span> release_info()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;&amp;</span> <span class="kw">let</span> Semver <span class="op">{</span> major<span class="op">,</span> minor<span class="op">,</span> <span class="op">..</span> <span class="op">}</span> <span class="op">=</span> v</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;&amp;</span> major <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;&amp;</span> minor <span class="op">==</span> <span class="dv">88</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">println!</span>(<span class="st">&quot;`let_chains` was stabilized in this version&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>and this is how it could look like in haskell</p>
+<section id="some-prep-data" class="dn">
+<h3>Some prep data</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">{- LANGUAGE ViewPatterns #-}</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Semver</span> <span class="ot">=</span> <span class="dt">Semver</span> {<span class="ot"> major ::</span> <span class="dt">Int</span>,<span class="ot"> minor ::</span> <span class="dt">Int</span>,<span class="ot"> bugfix ::</span> <span class="dt">Int</span> }</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">deriving</span> (<span class="dt">Show</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Channel</span> <span class="ot">=</span> <span class="dt">Unstable</span> <span class="dt">Semver</span> <span class="op">|</span> <span class="dt">Stable</span> <span class="dt">Semver</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">deriving</span> (<span class="dt">Show</span>)</span></code></pre></div>
+</section>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">releaseInfo ::</span> <span class="dt">Channel</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>releaseInfo <span class="ot">=</span> <span class="dt">Stable</span> <span class="op">$</span> <span class="dt">Semver</span> <span class="dv">1</span> <span class="dv">88</span> <span class="dv">0</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ot">test ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>test <span class="ot">=</span> <span class="kw">case</span> releaseInfo <span class="kw">of</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    (<span class="dt">Stable</span> (<span class="dt">Semver</span> <span class="dv">1</span> <span class="dv">88</span> _)) <span class="ot">-&gt;</span> <span class="fu">putStrLn</span> <span class="st">&quot;Rusts `let_chains` was stabilized in this version&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    _ <span class="ot">-&gt;</span> <span class="fu">pure</span> ()</span></code></pre></div>
+<p>Haskell is more expressive
+when they need to express pure vs side effect functions. The old releaseInfo was static and
+able to be used in any pure code. But most of the time the release version might come from
+a database or another source of truth. So it could look like this.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">releaseInfoIO ::</span> <span class="dt">IO</span> <span class="dt">Channel</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>releaseInfoIO <span class="ot">=</span> <span class="fu">pure</span> <span class="op">.</span> <span class="dt">Stable</span> <span class="op">$</span> <span class="dt">Semver</span> <span class="dv">1</span> <span class="dv">88</span> <span class="dv">0</span> <span class="co">-- or get from a db or similar</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ot">rustLetChain ::</span> <span class="dt">Channel</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>rustLetChain (<span class="dt">Stable</span> (<span class="dt">Semver</span> <span class="dv">1</span> <span class="dv">88</span> _)) <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="st">&quot;Rusts `let_chains` was stabilized in this version&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>rustLetChain _ <span class="ot">=</span> <span class="fu">pure</span> ()</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ot">fakeMain ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>fakeMain <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    v <span class="ot">&lt;-</span> releaseInfoIO</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    rustLetChain v</span></code></pre></div></div>
+</section>
+
+    </main>
+    <footer>
+  <small>&copy; 2025 | Wgaffa's Digital Garden</small>
+</footer>
+
+  </body>
+</html>
+
+
