@@ -117,27 +117,34 @@ tagList ident tags =
             count
     joinTags = concatMap $ formatToString ("<li class='ma1'>" % string % "</li>")
 
-indexRule :: Rules ()
-indexRule =
+index :: Tags -> Rules ()
+index tags = do
     create ["index.html"] $ do
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAll "posts/**"
             let
-                indexCtx =
-                    listField "posts" postCtx (pure posts)
-                        <> constField "title" "Home"
-
-                bioCtx =
-                    listField
-                        "contacts"
-                        (field "title" (pure . fst . itemBody) <> field "target" (pure . snd . itemBody))
-                        (sequence [makeItem ("github", "https://www.github.com/wgaffa")])
+                applyTemplates initItem =
+                    foldM
+                        ( \acc x ->
+                            loadAndApplyTemplate
+                                (fromFilePath $ "templates/cards/" ++ x ++ ".html")
+                                ( postCtx
+                                    <> constField "name" (formatToString (titlecased string) x)
+                                    <> constField "tagurl" (toFilePath $ tagsMakeId tags x)
+                                )
+                                acc
+                        )
+                        initItem
+                        . fmap fst
+                        . tagsMap
+                        $ tags
 
             makeItem ""
-                >>= loadAndApplyTemplate "templates/blog.html" (indexCtx <> postCtx)
-                >>= loadAndApplyTemplate "templates/default.html" (indexCtx <> bioCtx <> postCtx)
+                >>= applyTemplates
+                >>= loadAndApplyTemplate "templates/index.html" postCtx
+                >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
+  where
 
 addLinkClasses :: Pandoc -> Pandoc
 addLinkClasses = walk go
@@ -167,12 +174,12 @@ main = do
             [ cssRule
             , copyRule
             , postsRule tags
-            , indexRule
             , syntaxHighlightRule
             , tagRule tags
             , tagList "tags.html" tags
             , tagRule cats
             , tagList "categories.html" cats
+            , index cats
             , templateRule
             ]
 
