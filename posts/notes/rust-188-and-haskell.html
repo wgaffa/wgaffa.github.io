@@ -33,6 +33,10 @@
     <h1 class="f2">Rust 1.88 let_chains compared to Haskell</h1>
     <small>2025-10-20</small>
     
+      <span class="pr2"><a href="../../tags/haskell.html" class="f5 link light-gray bg-purple ph2 pv1 br-pill grow mb2 dib">haskell</a></span>
+    
+      <span class="pr2"><a href="../../tags/rust.html" class="f5 link light-gray bg-purple ph2 pv1 br-pill grow mb2 dib">rust</a></span>
+    
   </div>
   <div><p>A while ago rust released version 1.88 and I read it and thought it was similar to how haskell
 worked and thought I’d compare these two.</p>
@@ -48,13 +52,11 @@ code example.</p>
 <p>and this is how it could look like in haskell</p>
 <section id="some-prep-data" class="dn">
 <h3>Some prep data</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">{- LANGUAGE ViewPatterns #-}</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Semver</span> <span class="ot">=</span> <span class="dt">Semver</span> {<span class="ot"> major ::</span> <span class="dt">Int</span>,<span class="ot"> minor ::</span> <span class="dt">Int</span>,<span class="ot"> bugfix ::</span> <span class="dt">Int</span> }</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">deriving</span> (<span class="dt">Show</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Channel</span> <span class="ot">=</span> <span class="dt">Unstable</span> <span class="dt">Semver</span> <span class="op">|</span> <span class="dt">Stable</span> <span class="dt">Semver</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">deriving</span> (<span class="dt">Show</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Semver</span> <span class="ot">=</span> <span class="dt">Semver</span> {<span class="ot"> major ::</span> <span class="dt">Int</span>,<span class="ot"> minor ::</span> <span class="dt">Int</span>,<span class="ot"> bugfix ::</span> <span class="dt">Int</span> }</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">deriving</span> (<span class="dt">Show</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Channel</span> <span class="ot">=</span> <span class="dt">Unstable</span> <span class="dt">Semver</span> <span class="op">|</span> <span class="dt">Stable</span> <span class="dt">Semver</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">deriving</span> (<span class="dt">Show</span>)</span></code></pre></div>
 </section>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">releaseInfo ::</span> <span class="dt">Channel</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>releaseInfo <span class="ot">=</span> <span class="dt">Stable</span> <span class="op">$</span> <span class="dt">Semver</span> <span class="dv">1</span> <span class="dv">88</span> <span class="dv">0</span></span>
