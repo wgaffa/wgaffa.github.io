@@ -61,12 +61,14 @@ myCompiler =
     pandocCompilerWithTransform
         ( defaultHakyllReaderOptions
             { readerExtensions =
-                enableExtension Ext_fenced_code_attributes $ enableExtension Ext_raw_html (readerExtensions defaultHakyllReaderOptions)
+                enableExtension Ext_fenced_code_attributes $
+                    enableExtension Ext_raw_html (readerExtensions defaultHakyllReaderOptions)
             }
         )
         ( defaultHakyllWriterOptions
             { writerExtensions =
-                enableExtension Ext_fenced_code_attributes $ enableExtension Ext_raw_html (writerExtensions defaultHakyllWriterOptions)
+                enableExtension Ext_fenced_code_attributes $
+                    enableExtension Ext_raw_html (writerExtensions defaultHakyllWriterOptions)
             }
         )
         addLinkClasses
