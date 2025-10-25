@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Data.List (intercalate)
+import Data.Maybe (fromMaybe)
 
 import Data.Text (Text)
 
@@ -147,14 +148,15 @@ index tags = do
                 applyTemplates initItem =
                     foldM
                         ( \acc x ->
-                            let def = toFilePath $ tagsMakeId tags x
-                             in loadAndApplyTemplate
-                                    (fromFilePath $ "templates/cards/" ++ x ++ ".html")
-                                    ( postCtx
-                                        <> constField "name" (formatToString (titlecased string) x)
-                                        <> constField "tagurl" (maybe def toFilePath $ M.lookup x categoryMappings)
-                                    )
-                                    acc
+                            loadAndApplyTemplate
+                                (fromFilePath $ "templates/cards/" ++ x ++ ".html")
+                                ( postCtx
+                                    <> constField "name" (formatToString (titlecased string) x)
+                                    <> constField
+                                        "tagurl"
+                                        (toFilePath . fromMaybe (tagsMakeId tags x) $ M.lookup x categoryMappings)
+                                )
+                                acc
                         )
                         initItem
                         . fmap fst
