@@ -66,8 +66,6 @@ unlisted = do
         route $ setExtension "html"
         compile $
             myCompiler
-                >>= loadAndApplyTemplate "templates/unlisted.html" postCtx
-                >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
 
 myCompiler :: Compiler (Item String)
@@ -136,8 +134,22 @@ tagList ident tags =
 categoryMappings :: Map String Identifier
 categoryMappings =
     M.fromList
-        [ ("lhwaoc", fromFilePath "unlisted/lhwaoc.html")
+        [ ("lhwaoc", fromFilePath "lhwaoc/index.html")
         ]
+
+lhwaoc :: Rules ()
+lhwaoc = do
+    create ["lhwaoc.html"] $ do
+        route $ constRoute "lhwaoc/index.html"
+        compile $ do
+            posts <- chronological =<< loadAll "posts/lhwaoc/**"
+            intro <- loadBody @String "unlisted/lhwaoc.md"
+            let
+                ctx = listField "posts" postCtx (pure posts) <> defaultContext
+            makeItem intro
+                >>= loadAndApplyTemplate "templates/blog.html" ctx
+                >>= loadAndApplyTemplate "templates/default.html" postCtx
+                >>= relativizeUrls
 
 index :: Tags -> Rules ()
 index tags = do
@@ -205,6 +217,7 @@ main = do
             , tagList "categories.html" cats
             , index cats
             , unlisted
+            , lhwaoc
             , templateRule
             ]
 
