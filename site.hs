@@ -4,6 +4,9 @@ import Data.List (intercalate)
 
 import Data.Text (Text)
 
+import Data.Map (Map)
+import Data.Map qualified as M
+
 import Hakyll
 import System.Process
 import Text.Pandoc.Highlighting (Style, breezeDark, styleToCss)
@@ -53,6 +56,16 @@ postsRule tags =
 
             myCompiler
                 >>= loadAndApplyTemplate "templates/post.html" ctx
+                >>= loadAndApplyTemplate "templates/default.html" postCtx
+                >>= relativizeUrls
+
+unlisted :: Rules ()
+unlisted = do
+    match "unlisted/**" $ do
+        route $ setExtension "html"
+        compile $
+            myCompiler
+                >>= loadAndApplyTemplate "templates/unlisted.html" postCtx
                 >>= loadAndApplyTemplate "templates/default.html" postCtx
                 >>= relativizeUrls
 
@@ -119,6 +132,12 @@ tagList ident tags =
             count
     joinTags = concatMap $ formatToString ("<li class='ma1'>" % string % "</li>")
 
+categoryMappings :: Map String Identifier
+categoryMappings =
+    M.fromList
+        [ ("lhwaoc", fromFilePath "unlisted/lhwaoc.html")
+        ]
+
 index :: Tags -> Rules ()
 index tags = do
     create ["index.html"] $ do
@@ -128,13 +147,14 @@ index tags = do
                 applyTemplates initItem =
                     foldM
                         ( \acc x ->
-                            loadAndApplyTemplate
-                                (fromFilePath $ "templates/cards/" ++ x ++ ".html")
-                                ( postCtx
-                                    <> constField "name" (formatToString (titlecased string) x)
-                                    <> constField "tagurl" (toFilePath $ tagsMakeId tags x)
-                                )
-                                acc
+                            let def = toFilePath $ tagsMakeId tags x
+                             in loadAndApplyTemplate
+                                    (fromFilePath $ "templates/cards/" ++ x ++ ".html")
+                                    ( postCtx
+                                        <> constField "name" (formatToString (titlecased string) x)
+                                        <> constField "tagurl" (maybe def toFilePath $ M.lookup x categoryMappings)
+                                    )
+                                    acc
                         )
                         initItem
                         . fmap fst
@@ -182,6 +202,7 @@ main = do
             , tagRule cats
             , tagList "categories.html" cats
             , index cats
+            , unlisted
             , templateRule
             ]
 
