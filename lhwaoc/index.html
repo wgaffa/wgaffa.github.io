@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wgaffa's Digital Garden - lhwaoc</title>
+    <link rel="stylesheet" href="../css/tachyons.min.css" />
+    <link rel="stylesheet" href="../css/custom.css" />
+    <link rel="stylesheet" href="../css/syntax.css" />
+    <script src="../js/copy-code.js"></script>
+    <script src="../js/spoiler.js"></script>
+  </head>
+
+  <body class="bg-near-black silver sans-serif pa4 mw8 center">
+    <header class="tc pv4 mb4">
+  <h1 class="light-gray f2 lh-title ma0">
+    <a href="../" class="link white dim">Wgaffa's Digital Garden</a>
+  </h1>
+  <p class="silver f5 mt2 o-70">My scattered thoughts of a single braincell</p>
+
+  <nav class="w-100 bg-near-black pa3 flex items-center justify-between">
+    <div class="flex items-center">
+      <a href="../tags.html" class="f6 link light-gray dim mr3">Tags</a>
+      <a href="../categories.html" class="f6 link light-gray dim mr3">Categories</a>
+    </div>
+  </nav>
+</header>
+
+    <main>
+      <h1 id="learn-haskell-with-advent-of-code">Learn Haskell with Advent of Code</h1>
+<h2 id="who-is-this-for">Who is this for?</h2>
+<p>I am aiming this series for those that are new to Haskell but have atleast read
+on syntax or a book or two but want work on some examples. Advent of Code is a site that
+give various problems to solve in any way you wish and makes a perfect candidate to
+ease in new Haskellers into some of the libraries functions.</p>
+<h2 id="how-the-series-is-planned">How the series is planned</h2>
+<p>The series only solves the first five days of Advent of Code on each year as those are
+usually the easiest. The rest may be for another series when for when you have become
+more familiar with Haskell.</p>
+<h2 id="can-i-download-and-run-your-examples">Can I download and run your examples?</h2>
+<p>Yes. There are two ways you could run them.</p>
+<h3 id="nix-way">Nix way</h3>
+<p>Using nix with flakes you can run these commands.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">nix</span> shell nixpkgs#darcs <span class="at">--command</span> darcs clone hub.darcs.net:wgaffa/lhwaoc</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">nix</span> run ./lhwaoc#2015-01</span></code></pre></div>
+<p>That will clone the code to the directory <em>lhwaoc</em>. And the second runs a specific year and day
+problem. Note that it may crash if your puzzle input is could not be opened or read.</p>
+<h3 id="with-ghc">With GHC</h3>
+<p>Download the Markdown file from <a href="https://github.com/wgaffa/wgaffa.github.io/tree/main/posts/lhwaoc" class="link light-blue hover-blue">Github</a>.
+You also need to have <em>markdown-unlit</em> library available to GHC. Also make sure the markdown file ends in
+the file extension <em>.lhs</em> and not <em>.md</em>.</p>
+<p>Then you can run <code>ghc -pgmL markdown-unlit --make file.lhs</code> and it will compile.</p>
+<h1 id="current-list-of-posts-for-this-series">Current List of posts for this series</h1>
+<ul class="list pl0">
+  
+    <li class="mb3">
+        <a href="../posts/lhwaoc/2015-day1.html" class="link blue hover-light-blue f4">Learn Haskell with Advent of Code, 2015 day 1</a>
+      <div class="f6 gray mt1 flex flex-wrap gap1">
+        <span class="mr3">October 18, 2025</span>
+        
+          No tags
+        
+      </div>
+    </li>
+  
+</ul>
+
+
+    </main>
+    <footer class="pv4">
+  <small>&copy; 2025 | Wgaffa's Digital Garden</small>
+</footer>
+
+  </body>
+</html>
+
+
